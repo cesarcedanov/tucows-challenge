@@ -1,11 +1,11 @@
 package server
 
 import (
-	"fmt"
+	"github.com/gin-gonic/gin"
 	"net/http"
 	"tucows-challenge/model"
 )
 
-func GetMenu(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "Menu: %+v", model.Menu)
+func GetMenu(c *gin.Context) {
+	c.IndentedJSON(http.StatusOK, model.Menu)
 }

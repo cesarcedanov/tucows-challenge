@@ -3,9 +3,9 @@ package model
 const (
 	OrderStatus_PreOrder   = "PreOrder"
 	OrderStatus_Confirmed  = "Confirmed"
+	OrderStatus_Canceled   = "Canceled"
 	OrderStatus_InProgress = "InProgress"
 	OrderStatus_Finished   = "Finished"
-	OrderStatus_Canceled   = "Canceled"
 )
 
 type Product struct {
@@ -17,6 +17,14 @@ type Product struct {
 const Coffee = "COFFEE"
 const Milk = "MILK"
 const Water = "WATER"
+
+const (
+	ProductID_Espresso = iota
+	ProductID_Americano
+	ProductID_Cappuccino
+	ProductID_Latte
+	ProductID_TuCowsMilk
+)
 
 // Espresso is a shot of Coffee (100%)
 var Espresso = Product{

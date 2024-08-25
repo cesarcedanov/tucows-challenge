@@ -5,33 +5,47 @@ import (
 	"tucows-challenge/model"
 )
 
-var Orders = map[int]model.Order{
-	1: model.Order{
+// NextIDSequence will increase based on Orders created
+var NextIDSequence = len(Orders)
+
+func GetNextID() int {
+	NextIDSequence++
+	return NextIDSequence
+}
+
+var Orders = map[int]*model.Order{
+	1: &model.Order{
 		ID:         1,
 		ClientName: "Cesar",
 		Status:     model.OrderStatus_InProgress,
-		Products: []model.Product{
-			model.Espresso,
-			model.Americano,
-			model.Americano,
-			model.TuCowsMilk,
+		Products: []int{
+			model.ProductID_Espresso,
+			model.ProductID_Americano,
+			model.ProductID_Americano,
+			model.ProductID_TuCowsMilk,
 		},
-		TotalPrice: 12, // This should be Calculated on Runtime
-		CreatedAt:  time.Now(),
-		UpdatedAt:  time.Now(),
-		UpdatedBy:  "Employee #1",
+		Price: model.OrderPrice{
+			FinalPrice: 12,
+			AutoPrice:  true,
+		}, // This should be Calculated on Runtime
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
+		UpdatedBy: "Employee #1",
 	},
-	2: model.Order{
+	2: &model.Order{
 		ID:         2,
 		ClientName: "Jon Doe",
 		Status:     model.OrderStatus_InProgress,
-		Products: []model.Product{
-			model.Espresso,
-			model.TuCowsMilk,
+		Products: []int{
+			model.ProductID_Espresso,
+			model.ProductID_TuCowsMilk,
 		},
-		TotalPrice: 7, // This should be Calculated on Runtime
-		CreatedAt:  time.Now(),
-		UpdatedAt:  time.Now(),
-		UpdatedBy:  "Employee #2",
+		Price: model.OrderPrice{
+			AutoPrice:  false,
+			FinalPrice: 20,
+		}, // This should be Calculated on Runtime
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
+		UpdatedBy: "Employee #2",
 	},
 }
