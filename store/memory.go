@@ -5,15 +5,15 @@ import (
 	"tucows-challenge/model"
 )
 
-// NextIDSequence will increase based on Orders created
-var NextIDSequence = len(Orders)
+// NextIDSequence will increase based on InitOrders created
+var NextIDSequence = len(InitOrders)
 
 func GetNextID() int {
 	NextIDSequence++
 	return NextIDSequence
 }
 
-var Orders = map[int]*model.Order{
+var InitOrders = map[int]*model.Order{
 	1: &model.Order{
 		ID:         1,
 		ClientName: "Cesar",

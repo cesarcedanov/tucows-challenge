@@ -1,10 +1,10 @@
 package model
 
 const (
-	OrderStatus_PreOrder   = "PreOrder"
+	OrderStatus_PreOrder   = "Pre Orders"
 	OrderStatus_Confirmed  = "Confirmed"
 	OrderStatus_Canceled   = "Canceled"
-	OrderStatus_InProgress = "InProgress"
+	OrderStatus_InProgress = "In Progress"
 	OrderStatus_Finished   = "Finished"
 )
 
@@ -19,7 +19,7 @@ const Milk = "MILK"
 const Water = "WATER"
 
 const (
-	ProductID_Espresso = iota
+	ProductID_Espresso = iota + 1
 	ProductID_Americano
 	ProductID_Cappuccino
 	ProductID_Latte
@@ -77,4 +77,23 @@ var TuCowsMilk = Product{
 
 var Menu = []Product{
 	Espresso, Americano, Cappuccino, Latte, TuCowsMilk,
+}
+
+func productMapper(ID int) Product {
+	switch ID {
+	case ProductID_Espresso:
+		return Espresso
+	case ProductID_Americano:
+		return Americano
+	case ProductID_Cappuccino:
+		return Cappuccino
+	case ProductID_Latte:
+		return Latte
+	case ProductID_TuCowsMilk:
+		return TuCowsMilk
+	default:
+		return Product{
+			Title: "Invalid Product",
+		}
+	}
 }
