@@ -12,7 +12,6 @@ import (
 
 func main() {
 	fmt.Printf("Server started at %s", time.Now())
-	// Init Kitchen Queue
 
 	kitchen := service.NewKitchen(5, 100, store.InitOrders)
 

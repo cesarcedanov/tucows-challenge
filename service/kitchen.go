@@ -56,3 +56,8 @@ func (k *Kitchen) GetOrders() map[int]*model.Order {
 	defer k.mutex.Unlock()
 	return k.Orders
 }
+
+func (k *Kitchen) Close() {
+	// We need to Close the channel in case we close the Kitchen.
+	close(k.Queue)
+}

@@ -54,6 +54,7 @@ func (o *Order) Prepare(workerID int) {
 		}
 	}
 	o.Status = OrderStatus_Finished
+	o.UpdatedAt = time.Now()
 }
 
 func CalculateOrderPrice(order *Order) {
