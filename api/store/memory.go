@@ -2,23 +2,15 @@ package store
 
 import (
 	"time"
-	"tucows-challenge/model"
+	"tucows-challenge/api/model"
 )
 
-// NextIDSequence will increase based on InitOrders created
-var NextIDSequence = len(InitOrders)
-
-func GetNextID() int {
-	NextIDSequence++
-	return NextIDSequence
-}
-
-var InitOrders = map[int]*model.Order{
+var InitOrders = []*model.Order{
 	1: &model.Order{
 		ID:         1,
 		ClientName: "Cesar",
-		Status:     model.OrderStatus_InProgress,
-		Products: []int{
+		Status:     model.OrderStatus_PreOrder,
+		Products: []int64{
 			model.ProductID_Espresso,
 			model.ProductID_Americano,
 			model.ProductID_Americano,
@@ -35,8 +27,8 @@ var InitOrders = map[int]*model.Order{
 	2: &model.Order{
 		ID:         2,
 		ClientName: "Jon Doe",
-		Status:     model.OrderStatus_InProgress,
-		Products: []int{
+		Status:     model.OrderStatus_PreOrder,
+		Products: []int64{
 			model.ProductID_Espresso,
 			model.ProductID_TuCowsMilk,
 		},

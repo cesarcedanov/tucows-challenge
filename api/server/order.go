@@ -3,16 +3,17 @@ package server
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 	"net/http"
 	"strconv"
 	"time"
-	"tucows-challenge/model"
-	"tucows-challenge/service"
-	"tucows-challenge/store"
+	"tucows-challenge/api/model"
+	"tucows-challenge/api/service"
 )
 
 type OrderHandler struct {
 	Kitchen service.KitchenService
+	StoreDB *gorm.DB
 }
 
 const kEmployee = "Tester"
@@ -22,10 +23,14 @@ func (handler *OrderHandler) GetMenu(c *gin.Context) {
 }
 
 func (handler *OrderHandler) GetAllOrders(c *gin.Context) {
+	rows := []model.Order{}
+	handler.StoreDB.Model(&model.Order{}).Find(&rows)
+
 	resp := []model.OrderResponse{}
-	for _, order := range handler.Kitchen.GetOrders() {
-		resp = append(resp, model.HumanizeOrder(order))
+	for _, order := range rows {
+		resp = append(resp, model.HumanizeOrder(&order))
 	}
+
 	c.IndentedJSON(http.StatusOK, resp)
 }
 
@@ -41,15 +46,13 @@ func (handler *OrderHandler) CreateOrder(c *gin.Context) {
 		c.IndentedJSON(http.StatusBadRequest, gin.H{"errorMsg": err.Error()})
 		return
 	}
-	nextID := store.GetNextID()
-	newOrder.ID = nextID
 	newOrder.Status = model.OrderStatus_PreOrder
 	model.CalculateOrderPrice(newOrder)
 	newOrder.CreatedAt = time.Now()
 	newOrder.UpdatedAt = time.Now()
 	newOrder.UpdatedBy = kEmployee
 
-	handler.Kitchen.GetOrders()[nextID] = newOrder
+	handler.StoreDB.Model(&model.Order{}).Create(newOrder)
 
 	c.IndentedJSON(http.StatusCreated, newOrder)
 }
@@ -71,6 +74,7 @@ func (handler *OrderHandler) UpdateOrder(c *gin.Context) {
 	model.CalculateOrderPrice(existingOrder)
 	existingOrder.UpdatedAt = time.Now()
 	existingOrder.UpdatedBy = kEmployee
+	handler.StoreDB.Save(&existingOrder)
 
 	c.IndentedJSON(http.StatusOK, existingOrder)
 }
@@ -80,17 +84,17 @@ func (handler *OrderHandler) ChangeOrderStatus(c *gin.Context) {
 	if order.Status != model.OrderStatus_PreOrder {
 		c.IndentedJSON(http.StatusForbidden, gin.H{"errorMsg": fmt.Sprintf("Orders %v is not pre-order", order.ID)})
 	}
+	order.UpdatedAt = time.Now()
+	order.UpdatedBy = kEmployee
 	switch c.Request.Method {
 	case http.MethodPatch:
 		order.Status = model.OrderStatus_Confirmed
+		handler.StoreDB.Save(order)
 		handler.Kitchen.AddConfirmedOrder(order)
 	case http.MethodDelete:
 		order.Status = model.OrderStatus_Canceled
-		delete(handler.Kitchen.GetOrders(), order.ID)
+		handler.StoreDB.Delete(order)
 	}
-	order.UpdatedAt = time.Now()
-	order.UpdatedBy = kEmployee
-	handler.Kitchen.GetOrders()[order.ID] = order
 	c.IndentedJSON(http.StatusOK, order)
 }
 
@@ -100,11 +104,14 @@ func (handler *OrderHandler) getOrderByID(c *gin.Context) *model.Order {
 		c.IndentedJSON(http.StatusBadRequest, gin.H{"errorMsg": "Orders ID should be an integer"})
 		return nil
 	}
-	kitchenOrders := handler.Kitchen.GetOrders()
-	order, found := kitchenOrders[orderID]
-	if !found {
-		c.IndentedJSON(http.StatusNotFound, gin.H{"errorMsg": "Orders not found"})
+	order := &model.Order{}
+	if result := handler.StoreDB.Find(order, orderID); result.Error != nil {
+		if result.RowsAffected == 0 {
+			c.IndentedJSON(http.StatusNotFound, gin.H{"errorMsg": "Order not found"})
+		}
+		c.IndentedJSON(http.StatusBadRequest, gin.H{"errorMsg": result.Error.Error()})
 		return nil
 	}
+
 	return order
 }

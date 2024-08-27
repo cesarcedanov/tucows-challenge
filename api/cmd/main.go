@@ -3,20 +3,22 @@ package main
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"log"
 	"net/http"
 	"time"
-	"tucows-challenge/server"
-	"tucows-challenge/service"
-	"tucows-challenge/store"
+	"tucows-challenge/api/server"
+	"tucows-challenge/api/service"
+	"tucows-challenge/api/store"
 )
 
 func main() {
-	fmt.Printf("Server started at %s", time.Now())
-
-	kitchen := service.NewKitchen(5, 100, store.InitOrders)
+	log.Printf("Server started at %s", time.Now())
+	db := store.InitDB()
+	kitchen := service.NewKitchen(5, 100, db)
 
 	handler := server.OrderHandler{
-		kitchen,
+		Kitchen: kitchen,
+		StoreDB: db,
 	}
 
 	router := gin.Default()
@@ -32,8 +34,8 @@ func main() {
 	router.DELETE(urLWithPrefix("order/:id/cancel"), handler.ChangeOrderStatus)
 
 	if err := router.Run("localhost:8080"); err != nil {
-		fmt.Printf("Server stopped at %s", time.Now())
-		fmt.Printf("Internal Error: %s", err)
+		log.Printf("Server stopped at %s", time.Now())
+		log.Printf("Internal Error: %s", err)
 	}
 }
 

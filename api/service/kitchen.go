@@ -1,27 +1,26 @@
 package service
 
 import (
-	"sync"
-	"tucows-challenge/model"
+	"gorm.io/gorm"
+	"tucows-challenge/api/model"
 )
 
 type KitchenService interface {
 	AddConfirmedOrder(order *model.Order)
-	GetOrders() map[int]*model.Order
 }
 
 type Kitchen struct {
-	Workers int // Total Workers
-	Orders  map[int]*model.Order
+	Workers int               // Total Workers
 	Queue   chan *model.Order // Channel
-	mutex   sync.Mutex
+	StoreDB *gorm.DB
+	//mutex   sync.Mutex
 }
 
-func NewKitchen(workers int, concurrentOrders int, orders map[int]*model.Order) *Kitchen {
+func NewKitchen(workers int, concurrentOrders int, db *gorm.DB) *Kitchen {
 	kitchen := &Kitchen{
 		Workers: workers,
 		Queue:   make(chan *model.Order, concurrentOrders),
-		Orders:  orders,
+		StoreDB: db,
 	}
 	kitchen.run()
 	return kitchen
@@ -35,26 +34,13 @@ func (k *Kitchen) run() {
 
 func (k *Kitchen) processOrder(workerID int) {
 	for order := range k.Queue {
-		order.Prepare(workerID)
-		k.mutex.Lock()
-		k.Orders[order.ID] = order
-		k.mutex.Unlock()
+		order.Prepare(workerID, k.StoreDB)
 	}
 }
 
 func (k *Kitchen) AddConfirmedOrder(order *model.Order) {
-	k.mutex.Lock()
-	// Added the new Confirmed Orders into the Kitchen
-	k.Orders[order.ID] = order
-	k.mutex.Unlock()
 	// Push it into the Queue
 	k.Queue <- order
-}
-
-func (k *Kitchen) GetOrders() map[int]*model.Order {
-	k.mutex.Lock()
-	defer k.mutex.Unlock()
-	return k.Orders
 }
 
 func (k *Kitchen) Close() {

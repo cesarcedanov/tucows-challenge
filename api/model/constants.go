@@ -79,7 +79,7 @@ var Menu = []Product{
 	Espresso, Americano, Cappuccino, Latte, TuCowsMilk,
 }
 
-func productMapper(ID int) Product {
+func productMapper(ID int64) Product {
 	switch ID {
 	case ProductID_Espresso:
 		return Espresso
