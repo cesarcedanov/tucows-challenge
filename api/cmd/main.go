@@ -33,7 +33,7 @@ func main() {
 	router.PATCH(urLWithPrefix("order/:id/confirm"), handler.ChangeOrderStatus)
 	router.DELETE(urLWithPrefix("order/:id/cancel"), handler.ChangeOrderStatus)
 
-	if err := router.Run("localhost:8080"); err != nil {
+	if err := router.RunTLS(":8080", "./cert/server.crt", "./cert/server.key"); err != nil {
 		log.Printf("Server stopped at %s", time.Now())
 		log.Printf("Internal Error: %s", err)
 	}
