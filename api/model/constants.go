@@ -1,5 +1,7 @@
 package model
 
+import "time"
+
 const (
 	OrderStatus_PreOrder   = "Pre Orders"
 	OrderStatus_Confirmed  = "Confirmed"
@@ -96,4 +98,40 @@ func productMapper(ID int64) Product {
 			Title: "Invalid Product",
 		}
 	}
+}
+
+var InitOrders = []*Order{&Order{
+	ID:         1,
+	ClientName: "Cesar",
+	Status:     OrderStatus_PreOrder,
+	Products: []int64{
+		ProductID_Espresso,
+		ProductID_Americano,
+		ProductID_Americano,
+		ProductID_TuCowsMilk,
+	},
+	Price: OrderPrice{
+		FinalPrice: 12,
+		AutoPrice:  true,
+	}, // This should be Calculated on Runtime
+	CreatedAt: time.Now(),
+	UpdatedAt: time.Now(),
+	UpdatedBy: "Employee #1",
+},
+	&Order{
+		ID:         2,
+		ClientName: "Jon Doe",
+		Status:     OrderStatus_PreOrder,
+		Products: []int64{
+			ProductID_Espresso,
+			ProductID_TuCowsMilk,
+		},
+		Price: OrderPrice{
+			AutoPrice:  false,
+			FinalPrice: 20,
+		}, // This should be Calculated on Runtime
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
+		UpdatedBy: "Employee #2",
+	},
 }

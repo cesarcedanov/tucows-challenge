@@ -17,7 +17,7 @@ func InitDB() *gorm.DB {
 	if err = db.AutoMigrate(&model.Order{}); err != nil {
 		panic(err)
 	}
-	db.Model(&model.Order{}).Create(InitOrders)
+	db.Model(&model.Order{}).Create(model.InitOrders)
 	log.Println("Successfully connected to DB")
 	return db
 }
