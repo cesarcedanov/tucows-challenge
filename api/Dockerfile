@@ -11,8 +11,14 @@ RUN go mod download
 # Copy the entire API directory to the working directory
 COPY . .
 
+RUN chmod 777 /app/cmd/cert/server.crt
+RUN chmod 777 /app/cmd/cert/server.key
+
+# Copy the cert directory to the /app/cmd/ directory in the container
+COPY ./cmd/cert /app/cmd/cert
+
 # Build the API server
-RUN go build -o api-server ./cmd
+RUN go build -o api-server ./cmd/main.go
 
 # Expose the port the API server listens on
 EXPOSE 8080

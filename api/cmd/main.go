@@ -5,6 +5,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"
+	"os"
 	"time"
 	"tucows-challenge/api/server"
 	"tucows-challenge/api/service"
@@ -41,7 +42,14 @@ func main() {
 	router.PATCH(urLWithPrefix("order/:id/confirm"), server.MiddlewareAuth(), handler.ChangeOrderStatus)
 	router.PATCH(urLWithPrefix("order/confirm/all"), server.MiddlewareAuth(), handler.ConfirmPreOrders)
 
-	if err := router.RunTLS("localhost:8080", "./cert/server.crt", "./cert/server.key"); err != nil {
+	certFile := "./cert/server.crt"
+	keyFile := "./cert/server.key"
+	if os.Getenv("IS_DOCKERIZED") == "true" {
+		certFile = "/app/cmd/cert/server.crt"
+		keyFile = "/app/cmd/cert/server.key"
+	}
+
+	if err := router.RunTLS(":8080", certFile, keyFile); err != nil {
 		log.Printf("Server stopped at %s", time.Now())
 		log.Printf("Internal Error: %s", err)
 	}

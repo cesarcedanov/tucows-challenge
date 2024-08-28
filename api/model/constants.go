@@ -101,7 +101,6 @@ func productMapper(ID int64) Product {
 }
 
 var InitOrders = []*Order{&Order{
-	ID:         1,
 	ClientName: "Cesar",
 	Status:     OrderStatus_PreOrder,
 	Products: []int64{
@@ -113,13 +112,12 @@ var InitOrders = []*Order{&Order{
 	Price: OrderPrice{
 		FinalPrice: 12,
 		AutoPrice:  true,
-	}, // This should be Calculated on Runtime
+	},
 	CreatedAt: time.Now(),
 	UpdatedAt: time.Now(),
 	UpdatedBy: "Employee #1",
 },
 	&Order{
-		ID:         2,
 		ClientName: "Jon Doe",
 		Status:     OrderStatus_PreOrder,
 		Products: []int64{
@@ -129,7 +127,7 @@ var InitOrders = []*Order{&Order{
 		Price: OrderPrice{
 			AutoPrice:  false,
 			FinalPrice: 20,
-		}, // This should be Calculated on Runtime
+		},
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
 		UpdatedBy: "Employee #2",
