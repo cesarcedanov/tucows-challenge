@@ -84,7 +84,7 @@ go run *.go
 
 #### Terminal Output
 Here we can see the Endpoints
-![API Server - Running and Listening](https://i.postimg.cc/xCVnbHBt/Screenshot-2024-08-28-at-14-00-14.png)
+![API Server - Running and Listening](https://i.postimg.cc/xjHgRmhL/Screenshot-2024-08-28-at-14-52-15.png)
 
 
 ### Run CLI - Manually
