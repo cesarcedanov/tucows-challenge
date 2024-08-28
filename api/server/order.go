@@ -16,8 +16,6 @@ type OrderHandler struct {
 	StoreDB *gorm.DB
 }
 
-const kEmployee = "Tester"
-
 func (handler *OrderHandler) GetMenu(c *gin.Context) {
 	c.IndentedJSON(http.StatusOK, model.Menu)
 }
@@ -50,7 +48,7 @@ func (handler *OrderHandler) CreateOrder(c *gin.Context) {
 	model.CalculateOrderPrice(newOrder)
 	newOrder.CreatedAt = time.Now()
 	newOrder.UpdatedAt = time.Now()
-	newOrder.UpdatedBy = kEmployee
+	newOrder.UpdatedBy = c.MustGet("username").(string)
 
 	handler.StoreDB.Model(&model.Order{}).Create(newOrder)
 
@@ -73,7 +71,7 @@ func (handler *OrderHandler) UpdateOrder(c *gin.Context) {
 	existingOrder.Price = updateOrder.Price
 	model.CalculateOrderPrice(existingOrder)
 	existingOrder.UpdatedAt = time.Now()
-	existingOrder.UpdatedBy = kEmployee
+	existingOrder.UpdatedBy = c.MustGet("username").(string)
 	handler.StoreDB.Save(&existingOrder)
 
 	c.IndentedJSON(http.StatusOK, model.HumanizeOrder(existingOrder))
@@ -85,7 +83,7 @@ func (handler *OrderHandler) ChangeOrderStatus(c *gin.Context) {
 		c.IndentedJSON(http.StatusForbidden, gin.H{"errorMsg": fmt.Sprintf("Orders %v is not pre-order", order.ID)})
 	}
 	order.UpdatedAt = time.Now()
-	order.UpdatedBy = kEmployee
+	order.UpdatedBy = c.MustGet("username").(string)
 	switch c.Request.Method {
 	case http.MethodPatch:
 		order.Status = model.OrderStatus_Confirmed

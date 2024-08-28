@@ -25,14 +25,21 @@ func main() {
 	router.GET("/", func(c *gin.Context) {
 		c.IndentedJSON(http.StatusOK, gin.H{"healthy-check": "tucows-coffee"})
 	})
+
+	// Login
+	router.POST(urLWithPrefix("login"), server.Login)
+
+	// Non-Auth
 	router.GET(urLWithPrefix("menu"), handler.GetMenu)
-	router.GET(urLWithPrefix("order/all"), handler.GetAllOrders)
-	router.GET(urLWithPrefix("order/:id"), handler.GetOrder)
-	router.POST(urLWithPrefix("order"), handler.CreateOrder)
-	router.PUT(urLWithPrefix("order/:id"), handler.UpdateOrder)
-	router.DELETE(urLWithPrefix("order/:id/cancel"), handler.ChangeOrderStatus)
-	router.PATCH(urLWithPrefix("order/:id/confirm"), handler.ChangeOrderStatus)
-	router.PATCH(urLWithPrefix("order/confirm/all"), handler.ConfirmPreOrders)
+
+	// Auth
+	router.GET(urLWithPrefix("order/all"), server.MiddlewareAuth(), handler.GetAllOrders)
+	router.GET(urLWithPrefix("order/:id"), server.MiddlewareAuth(), handler.GetOrder)
+	router.POST(urLWithPrefix("order"), server.MiddlewareAuth(), handler.CreateOrder)
+	router.PUT(urLWithPrefix("order/:id"), server.MiddlewareAuth(), handler.UpdateOrder)
+	router.DELETE(urLWithPrefix("order/:id/cancel"), server.MiddlewareAuth(), handler.ChangeOrderStatus)
+	router.PATCH(urLWithPrefix("order/:id/confirm"), server.MiddlewareAuth(), handler.ChangeOrderStatus)
+	router.PATCH(urLWithPrefix("order/confirm/all"), server.MiddlewareAuth(), handler.ConfirmPreOrders)
 
 	if err := router.RunTLS("localhost:8080", "./cert/server.crt", "./cert/server.key"); err != nil {
 		log.Printf("Server stopped at %s", time.Now())
