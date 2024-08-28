@@ -5,10 +5,10 @@ import (
 	"fmt"
 	"os"
 	"strings"
+	"time"
 )
 
 var currentMenu int
-var isEmployee bool
 
 const (
 	PublicMenu = iota
@@ -33,10 +33,17 @@ func displayGuestMenu() string {
 func executeOperation(choice string) bool {
 	switch choice {
 	case "1":
-		currentMenu = EmployeeMenu
-		for currentMenu == EmployeeMenu {
-			displayEmployeeMenu()
+		login()
+		if jwtToken != "" {
+			fmt.Printf("\nWelcome '%s' - Sesion started at %s", employeeUsername, time.Now().String())
+			currentMenu = EmployeeMenu
+			for currentMenu == EmployeeMenu {
+				displayEmployeeMenu()
+			}
+		} else {
+			waitUntilPress()
 		}
+
 	case "2":
 		fetchMenu()
 	case "3":
@@ -51,8 +58,7 @@ func executeOperation(choice string) bool {
 
 // Show the initial Menu
 func displayEmployeeMenu() {
-	isEmployee = true
-	fmt.Println("\n\nEmployee Name: ", "Tester")
+	fmt.Printf("\n\nCurrent Employee '%s' ", employeeUsername)
 	fmt.Println("1. Check ALL Orders")
 	fmt.Println("2. Check Order by ID")
 	fmt.Println("3. Create Order")
@@ -81,7 +87,7 @@ func executeEmployeeOperation(choice string) bool {
 		waitUntilPress()
 	case "3":
 		fmt.Println("Create Order")
-		payload := populateOrderRequest(isEmployee, "")
+		payload := populateOrderRequest("")
 		if payload != nil {
 			createOrder(*payload)
 			waitUntilPress()
@@ -91,7 +97,7 @@ func executeEmployeeOperation(choice string) bool {
 		orderID := readInput("\nSearch Order by ID: ")
 		fetchOrderByID(orderID)
 
-		payload := populateOrderRequest(isEmployee, orderID)
+		payload := populateOrderRequest(orderID)
 		if payload != nil {
 			updateOrder(*payload)
 			waitUntilPress()
@@ -124,8 +130,8 @@ func executeEmployeeOperation(choice string) bool {
 			waitUntilPress()
 		}
 	case "8":
-		isEmployee = false
 		fmt.Println("Log Out")
+		logout()
 		currentMenu = PublicMenu
 		displayGuestMenu()
 

@@ -51,11 +51,18 @@ func fetchMenu() {
 
 // fetch All Orders from the API Server
 func fetchAllOrders() {
-	resp, err := client.Get(url + "order/all")
+	req, err := http.NewRequest(http.MethodGet, url+"order/all", nil)
 	if err != nil {
-		log.Fatal("Error fetching menu data:", err)
+		log.Fatalf("Failed Get Request: %v", err)
+	}
+	req.Header.Set("Authorization", jwtToken)
+
+	resp, err := client.Do(req)
+	if err != nil {
+		log.Println("Error fetching all Orders:", err)
 		return
 	}
+
 	defer resp.Body.Close()
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
@@ -71,9 +78,15 @@ func fetchAllOrders() {
 
 // fetch specific Order by ID from the API Server
 func fetchOrderByID(orderID string) {
-	resp, err := client.Get(url + "order/" + orderID)
+	req, err := http.NewRequest(http.MethodGet, url+"order/"+orderID, nil)
 	if err != nil {
-		log.Fatal("Error fetching menu data:", err)
+		log.Fatalf("Failed Get Request: %v", err)
+	}
+	req.Header.Set("Authorization", jwtToken)
+
+	resp, err := client.Do(req)
+	if err != nil {
+		log.Println("Error fetching Order:", err)
 		return
 	}
 	defer resp.Body.Close()
@@ -90,7 +103,7 @@ func fetchOrderByID(orderID string) {
 }
 
 // populate the data for a Request
-func populateOrderRequest(isEmployee bool, id string) *OrderRequest {
+func populateOrderRequest(id string) *OrderRequest {
 	var orderID int
 	var err error
 	if id != "" {
@@ -118,18 +131,16 @@ func populateOrderRequest(isEmployee bool, id string) *OrderRequest {
 
 	autoPrice := true
 	var finalPrice float32
-	if isEmployee {
-		isAutoPrice := readInput("Price is auto Calculated, but you can alter the price manually. Do you want set price manually it? Y / N:")
-		if isAutoPrice == "Y" || isAutoPrice == "y" {
-			autoPrice = false
-			manualPrice := readInput("Enter the final price: ")
-			if n, err := strconv.Atoi(manualPrice); err == nil {
-				finalPrice = float32(n)
-			} else {
-				fmt.Println("Invalid Decimal Value:", manualPrice)
-				fmt.Println("Try again...")
-				return nil
-			}
+	isAutoPrice := readInput("Price is auto Calculated, but you can alter the price manually. Do you want set price manually it? Y / N:")
+	if isAutoPrice == "Y" || isAutoPrice == "y" {
+		autoPrice = false
+		manualPrice := readInput("Enter the final price: ")
+		if n, err := strconv.Atoi(manualPrice); err == nil {
+			finalPrice = float32(n)
+		} else {
+			fmt.Println("Invalid Decimal Value:", manualPrice)
+			fmt.Println("Try again...")
+			return nil
 		}
 	}
 
@@ -151,11 +162,18 @@ func createOrder(payload OrderRequest) {
 		return
 	}
 
-	resp, err := client.Post(url+"order", "application/json", bytes.NewBuffer(jsonData))
+	req, err := http.NewRequest(http.MethodPost, url+"order", bytes.NewBuffer(jsonData))
 	if err != nil {
-		log.Println("Error sending data:", err)
+		log.Fatalf("Failed Post Request: %v", err)
+	}
+	req.Header.Set("Authorization", jwtToken)
+
+	resp, err := client.Do(req)
+	if err != nil {
+		log.Println("Error creating Order:", err)
 		return
 	}
+
 	defer resp.Body.Close()
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
@@ -178,11 +196,13 @@ func updateOrder(payload OrderRequest) {
 	}
 	req, err := http.NewRequest(http.MethodPut, fmt.Sprintf("%sorder/%v", url, payload.ID), bytes.NewBuffer(jsonData))
 	if err != nil {
-		log.Fatalf("Failed new Patch Request: %v", err)
+		log.Fatalf("Failed Put Request: %v", err)
 	}
+	req.Header.Set("Authorization", jwtToken)
+
 	resp, err := client.Do(req)
 	if err != nil {
-		log.Println("Error sending request:", err)
+		log.Println("Error updating Order:", err)
 		return
 	}
 
@@ -203,11 +223,13 @@ func updateOrder(payload OrderRequest) {
 func confirmOrder(orderID string) {
 	req, err := http.NewRequest(http.MethodPatch, fmt.Sprint(url+"order/"+orderID+"/confirm"), nil)
 	if err != nil {
-		log.Fatalf("Failed new Patch Request: %v", err)
+		log.Fatalf("Failed Patch Request: %v", err)
 	}
+	req.Header.Set("Authorization", jwtToken)
+
 	resp, err := client.Do(req)
 	if err != nil {
-		log.Println("Error sending request:", err)
+		log.Println("Error confirming Order:", err)
 		return
 	}
 	defer resp.Body.Close()
@@ -227,11 +249,13 @@ func cancelOrder(orderID string) {
 
 	req, err := http.NewRequest(http.MethodDelete, fmt.Sprint(url+"order/"+orderID+"/cancel"), nil)
 	if err != nil {
-		log.Fatalf("Failed new Delete Request: %v", err)
+		log.Fatalf("Failed Delete Request: %v", err)
 	}
+	req.Header.Set("Authorization", jwtToken)
+
 	resp, err := client.Do(req)
 	if err != nil {
-		log.Println("Error sending request:", err)
+		log.Println("Error deleting Order:", err)
 		return
 	}
 	defer resp.Body.Close()
@@ -250,11 +274,13 @@ func cancelOrder(orderID string) {
 func confirmAllPreOrder() {
 	req, err := http.NewRequest(http.MethodPatch, fmt.Sprint(url+"order/confirm/all"), nil)
 	if err != nil {
-		log.Fatalf("Failed new Patch Request: %v", err)
+		log.Fatalf("Failed Patch Request: %v", err)
 	}
+	req.Header.Set("Authorization", jwtToken)
+
 	resp, err := client.Do(req)
 	if err != nil {
-		log.Println("Error sending request:", err)
+		log.Println("Error confirming All Orders", err)
 		return
 	}
 	defer resp.Body.Close()
