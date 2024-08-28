@@ -2,10 +2,11 @@ package model
 
 import (
 	"fmt"
-	"github.com/lib/pq"
-	"gorm.io/gorm"
 	"log"
 	"time"
+
+	"github.com/lib/pq"
+	"gorm.io/gorm"
 )
 
 type Order struct {
@@ -58,7 +59,7 @@ func (o *Order) Prepare(workerID int, db *gorm.DB) {
 	}
 	o.Status = OrderStatus_Finished
 	o.UpdatedAt = time.Now()
-	log.Printf("Worker %v finished Order %s\n", workerID, o.ID)
+	log.Printf("Worker %v finished Order %v\n", workerID, o.ID)
 	db.Save(&o)
 }
 
