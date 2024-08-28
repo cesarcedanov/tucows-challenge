@@ -26,14 +26,14 @@ _______
 Now let's Think and Build this Challenge. :) 
 
 As mentioned, First we need to think what project can be a good idea to satisfy all the Requirements. That's why I proceed to 'Brainstorm' and see the Trade-off.  
-I believe it will be nice to build a 'Coffee Shop' system, because I love Coffee.
+I believe it will be nice to build a 'Coffee Shop' system, because I love Coffee. <br>
 ![Task Requirements](https://i.postimg.cc/dVWhdW9n/Requirements-and-Possible-Ideas.jpg)
 
-Later, I moved to visualize how the API will interact with the DB and Worker Pool. And which methods we would like to expose to our Client (CLI)
+Later, I moved to visualize how the API will interact with the DB and Worker Pool. And which methods we would like to expose to our Client (CLI). <br>
 ![Task Requirements](https://i.postimg.cc/xdccPKxQ/Functions-and-Infra.jpg)
 
 
-Here we can see a Diagram how the Data is inserted and handle through the system. 
+Here we can see a Diagram how the Data is inserted and handle through the system. <br>
 ![Task Requirements](https://i.postimg.cc/pd4ycp4F/Diagram.jpg)
 
 
