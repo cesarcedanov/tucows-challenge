@@ -3,7 +3,7 @@ package model
 import "time"
 
 const (
-	OrderStatus_PreOrder   = "Pre Orders"
+	OrderStatus_PreOrder   = "Pre Order"
 	OrderStatus_Confirmed  = "Confirmed"
 	OrderStatus_Canceled   = "Canceled"
 	OrderStatus_InProgress = "In Progress"

@@ -54,7 +54,7 @@ func (handler *OrderHandler) CreateOrder(c *gin.Context) {
 
 	handler.StoreDB.Model(&model.Order{}).Create(newOrder)
 
-	c.IndentedJSON(http.StatusCreated, newOrder)
+	c.IndentedJSON(http.StatusCreated, model.HumanizeOrder(newOrder))
 }
 
 func (handler *OrderHandler) UpdateOrder(c *gin.Context) {
@@ -76,7 +76,7 @@ func (handler *OrderHandler) UpdateOrder(c *gin.Context) {
 	existingOrder.UpdatedBy = kEmployee
 	handler.StoreDB.Save(&existingOrder)
 
-	c.IndentedJSON(http.StatusOK, existingOrder)
+	c.IndentedJSON(http.StatusOK, model.HumanizeOrder(existingOrder))
 }
 
 func (handler *OrderHandler) ChangeOrderStatus(c *gin.Context) {
@@ -95,7 +95,7 @@ func (handler *OrderHandler) ChangeOrderStatus(c *gin.Context) {
 		order.Status = model.OrderStatus_Canceled
 		handler.StoreDB.Delete(order)
 	}
-	c.IndentedJSON(http.StatusOK, order)
+	c.IndentedJSON(http.StatusOK, model.HumanizeOrder(order))
 }
 
 func (handler *OrderHandler) getOrderByID(c *gin.Context) *model.Order {
@@ -114,4 +114,19 @@ func (handler *OrderHandler) getOrderByID(c *gin.Context) *model.Order {
 	}
 
 	return order
+}
+
+func (handler *OrderHandler) ConfirmPreOrders(c *gin.Context) {
+	orders := []*model.Order{}
+	if result := handler.StoreDB.Where("status = ?", model.OrderStatus_PreOrder).Find(&orders); result.Error != nil {
+		c.IndentedJSON(http.StatusInternalServerError, gin.H{"errorMsg": result.Error.Error()})
+	}
+	for _, order := range orders {
+		handler.Kitchen.AddConfirmedOrder(order)
+	}
+	resp := []model.OrderResponse{}
+	for _, order := range orders {
+		resp = append(resp, model.HumanizeOrder(order))
+	}
+	c.IndentedJSON(http.StatusOK, resp)
 }

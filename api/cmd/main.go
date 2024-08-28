@@ -30,10 +30,11 @@ func main() {
 	router.GET(urLWithPrefix("order/:id"), handler.GetOrder)
 	router.POST(urLWithPrefix("order"), handler.CreateOrder)
 	router.PUT(urLWithPrefix("order/:id"), handler.UpdateOrder)
-	router.PATCH(urLWithPrefix("order/:id/confirm"), handler.ChangeOrderStatus)
 	router.DELETE(urLWithPrefix("order/:id/cancel"), handler.ChangeOrderStatus)
+	router.PATCH(urLWithPrefix("order/:id/confirm"), handler.ChangeOrderStatus)
+	router.PATCH(urLWithPrefix("order/confirm/all"), handler.ConfirmPreOrders)
 
-	if err := router.RunTLS(":8080", "./cert/server.crt", "./cert/server.key"); err != nil {
+	if err := router.RunTLS("localhost:8080", "./cert/server.crt", "./cert/server.key"); err != nil {
 		log.Printf("Server stopped at %s", time.Now())
 		log.Printf("Internal Error: %s", err)
 	}
