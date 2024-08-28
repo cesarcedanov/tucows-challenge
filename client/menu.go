@@ -58,7 +58,8 @@ func executeOperation(choice string) bool {
 
 // Show the initial Menu
 func displayEmployeeMenu() {
-	fmt.Printf("\n\nCurrent Employee '%s' ", employeeUsername)
+	fmt.Printf("\n\nCurrent Employee '%s'\n", employeeUsername)
+	fmt.Println("0. Show Products Menu")
 	fmt.Println("1. Check ALL Orders")
 	fmt.Println("2. Check Order by ID")
 	fmt.Println("3. Create Order")
@@ -74,8 +75,9 @@ func displayEmployeeMenu() {
 
 // Handle operation from Employee
 func executeEmployeeOperation(choice string) bool {
-	// Login
 	switch choice {
+	case "0":
+		fetchMenu()
 	case "1":
 		fmt.Println("Checking All Orders")
 		fetchAllOrders()
@@ -86,14 +88,16 @@ func executeEmployeeOperation(choice string) bool {
 		fetchOrderByID(orderID)
 		waitUntilPress()
 	case "3":
-		fmt.Println("Create Order")
+		fetchMenu()
+		fmt.Println("\nCreate Order")
 		payload := populateOrderRequest("")
 		if payload != nil {
 			createOrder(*payload)
 			waitUntilPress()
 		}
 	case "4":
-		fmt.Println("Update Order")
+		fetchMenu()
+		fmt.Println("\nUpdate Order")
 		orderID := readInput("\nSearch Order by ID: ")
 		fetchOrderByID(orderID)
 
