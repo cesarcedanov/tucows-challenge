@@ -1,4 +1,4 @@
-module tucows-challenge
+module tucows-challenge/api
 
 go 1.22.3
 
